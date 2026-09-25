@@ -4,10 +4,44 @@
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
+#include "esp_http_server.h"
 
 
 #define AP_SSID "esp_relay"
 #define AP_PASSWORD "12345678"
+
+
+extern const char index_html_start[] asm("_binary_index_html_start");
+extern const char index_html_end[]   asm("_binary_index_html_end");
+
+
+esp_err_t
+root_handler(httpd_req_t *req) {
+    size_t index_len = index_html_end - index_html_start;
+
+    ESP_ERROR_CHECK(httpd_resp_set_type(req, "text/html"));
+    ESP_ERROR_CHECK(httpd_resp_send(req, index_html_start, index_len));
+
+    return ESP_OK;
+}
+
+
+void
+web_server_init() {
+    const static httpd_uri_t root = {
+        .uri = "/",
+        .method = HTTP_GET,
+        .handler = root_handler,
+        .user_ctx = NULL
+    };
+
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    httpd_handle_t server = NULL;
+
+    if(httpd_start(&server, &config) == ESP_OK) {
+        httpd_register_uri_handler(server, &root);
+    }
+}
 
 
 void
@@ -40,5 +74,6 @@ void
 app_main(void) {
     ESP_ERROR_CHECK(nvs_flash_init());
     wifi_init();
+    web_server_init();
 
 }

@@ -4,4 +4,6 @@ idf_component_register(
     REQUIRES nvs_flash
     REQUIRES esp_netif
     REQUIRES esp_wifi
+    REQUIRES esp_http_server
+    EMBED_FILES ../index.html
 )
