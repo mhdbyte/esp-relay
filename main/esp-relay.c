@@ -5,10 +5,19 @@
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "esp_http_server.h"
+#include "driver/gpio.h"
 
 
 #define AP_SSID "esp_relay"
 #define AP_PASSWORD "12345678"
+
+#define RELAY_1_GPIO 4
+#define RELAY_2_GPIO 5
+#define RELAY_3_GPIO 6
+#define RELAY_4_GPIO 7
+
+#define RELAY_ON 0
+#define RELAY_OFF 1
 
 
 extern const char index_html_start[] asm("_binary_index_html_start");
@@ -30,12 +39,37 @@ esp_err_t
 relay_handler(httpd_req_t *req) {
     int req_len = req -> content_len;
     char command[16];
+
     httpd_req_recv(req, command, req_len);
     command[req_len] = '\0';
 
-    printf("Received: %s\n", command);
-
     ESP_ERROR_CHECK(httpd_resp_send(req, "Received", 8));
+
+    if (strcmp(command, "relay1 on") == 0) {
+        gpio_set_level(RELAY_1_GPIO, RELAY_ON);
+    }
+    else if (strcmp(command, "relay1 off") == 0) {
+        gpio_set_level(RELAY_1_GPIO, RELAY_OFF);
+    }
+    else if (strcmp(command, "relay2 on") == 0) {
+        gpio_set_level(RELAY_2_GPIO, RELAY_ON);
+    }
+    else if (strcmp(command, "relay2 off") == 0) {
+        gpio_set_level(RELAY_2_GPIO, RELAY_OFF);
+    }
+    else if (strcmp(command, "relay3 on") == 0) {
+        gpio_set_level(RELAY_3_GPIO, RELAY_ON);
+    }
+    else if (strcmp(command, "relay3 off") == 0) {
+        gpio_set_level(RELAY_3_GPIO, RELAY_OFF);
+    }
+    else if (strcmp(command, "relay4 on") == 0) {
+        gpio_set_level(RELAY_4_GPIO, RELAY_ON);
+    }
+    else if (strcmp(command, "relay4 off") == 0) {
+        gpio_set_level(RELAY_4_GPIO, RELAY_OFF);
+    }
+
     return ESP_OK;
 }
 
@@ -93,9 +127,29 @@ wifi_init() {
 
 
 void
+relay_gpio_init() {
+    gpio_config_t gpio_cfg = {
+        .pin_bit_mask = (1ULL << RELAY_1_GPIO) | (1ULL << RELAY_2_GPIO) | (1ULL << RELAY_3_GPIO) | (1ULL << RELAY_4_GPIO),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+
+    ESP_ERROR_CHECK(gpio_config(&gpio_cfg));
+
+    gpio_set_level(RELAY_1_GPIO, RELAY_OFF);
+    gpio_set_level(RELAY_2_GPIO, RELAY_OFF);
+    gpio_set_level(RELAY_3_GPIO, RELAY_OFF);
+    gpio_set_level(RELAY_4_GPIO, RELAY_OFF);
+}
+
+
+void
 app_main(void) {
     ESP_ERROR_CHECK(nvs_flash_init());
+
     wifi_init();
     web_server_init();
-
+    relay_gpio_init();
 }
