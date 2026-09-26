@@ -26,6 +26,20 @@ root_handler(httpd_req_t *req) {
 }
 
 
+esp_err_t
+relay_handler(httpd_req_t *req) {
+    int req_len = req -> content_len;
+    char command[16];
+    httpd_req_recv(req, command, req_len);
+    command[req_len] = '\0';
+
+    printf("Received: %s\n", command);
+
+    ESP_ERROR_CHECK(httpd_resp_send(req, "Received", 8));
+    return ESP_OK;
+}
+
+
 void
 web_server_init() {
     const static httpd_uri_t root = {
@@ -35,11 +49,19 @@ web_server_init() {
         .user_ctx = NULL
     };
 
+    const static httpd_uri_t relay = {
+        .uri = "/relay",
+        .method = HTTP_POST,
+        .handler = relay_handler,
+        .user_ctx = NULL
+    };
+
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     httpd_handle_t server = NULL;
 
     if(httpd_start(&server, &config) == ESP_OK) {
         httpd_register_uri_handler(server, &root);
+        httpd_register_uri_handler(server, &relay);
     }
 }
 
