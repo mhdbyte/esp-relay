@@ -1,10 +1,98 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            background-color: #161616;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        h1, h2 {
+            color: #fff;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        button {
+            min-width: 130px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: solid 1px rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .on {
+            background-color: green;
+        }
+
+        .off {
+            background-color: red;
+        }
+
+        button:hover {
+            opacity: 0.6;
+        }
+    
+        button:active {
+            opacity: 0.5;
+            transform: scale(0.97);
+
+        }
+    </style>
+</head>
+
 <body>
+    <h1>ESP Relay Control</h1>
 
-  <h1>Hello World</h1>
+    <h2>Relay 1</h2>
+    <div>
+        <button onclick="sendData('relay1 on')" class="on">Turn ON</button>
+        <button onclick="sendData('relay1 off')" class="off">Turn OFF</button>
+    </div>
+    
+    <br> 
+    
+    <h2>Relay 2</h2>
+    <div>
+        <button onclick="sendData('relay2 on')" class="on">Turn ON</button>
+        <button onclick="sendData('relay2 off')" class="off">Turn OFF</button>
+    </div>
+    
+    <br>
 
+    <h2>Relay 3</h2>
+    <div>
+        <button onclick="sendData('relay3 on')" class="on">Turn ON</button>
+        <button onclick="sendData('relay3 off')" class="off">Turn OFF</button>
+    </div>
+    
+    <br> 
+    
+    <h2>Relay 4</h2>
+    <div>
+        <button onclick="sendData('relay4 on')" class="on">Turn ON</button>
+        <button onclick="sendData('relay4 off')" class="off">Turn OFF</button>
+    </div>
+    
+    <script>
+        function sendData(message) {
+            fetch("http://192.168.4.1/relay", {
+                method: "POST",
+                body: message
+            });
+        }
+    </script>
 </body>
 </html>
-
-
