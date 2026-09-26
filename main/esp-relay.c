@@ -8,8 +8,9 @@
 #include "driver/gpio.h"
 
 
-#define AP_SSID "esp_relay"
-#define AP_PASSWORD "12345678"
+// Project configuration:
+#define AP_SSID "YOUR_AP_SSID"
+#define AP_PASSWORD "YOUR_AP_PASSWORD"
 
 #define RELAY_1_GPIO 4
 #define RELAY_2_GPIO 5
@@ -74,6 +75,7 @@ relay_handler(httpd_req_t *req) {
 }
 
 
+// HTTP server configuration
 void
 web_server_init() {
     const static httpd_uri_t root = {
@@ -100,6 +102,7 @@ web_server_init() {
 }
 
 
+// Wi-Fi setup and configuration
 void
 wifi_init() {
     ESP_ERROR_CHECK(esp_netif_init());
@@ -126,6 +129,7 @@ wifi_init() {
 }
 
 
+// Relay GPIO configuration
 void
 relay_gpio_init() {
     gpio_config_t gpio_cfg = {
